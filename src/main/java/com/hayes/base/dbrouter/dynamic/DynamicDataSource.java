@@ -16,8 +16,12 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 public class DynamicDataSource extends AbstractRoutingDataSource {
     @Override
     protected Object determineCurrentLookupKey() {
-        DBTypeEnum dbTypeEnum = DBContextHolder.get();
-        log.info("当前数据源：{}", dbTypeEnum.name());
-        return dbTypeEnum;
+        try {
+            DBTypeEnum dbTypeEnum = DBContextHolder.get();
+            log.info("当前数据源：{}", dbTypeEnum.name());
+            return dbTypeEnum;
+        } finally {
+            DBContextHolder.remove();
+        }
     }
 }
