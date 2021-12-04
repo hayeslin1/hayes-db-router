@@ -1,5 +1,6 @@
 package com.hayes.base.dbrouter.mapper;
 
+import com.hayes.base.dbrouter.annotation.DBRouter;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -26,8 +27,9 @@ public interface DBMapper {
     List<Map<String, Object>> selectWithMaster();
 
 
-    @Select("select * from test")
-    List<Map<String, Object>> select();
+    @Select("select * from test1 where id = #{id} ")
+    @DBRouter(routerKey = "id")
+    List<Map<String, Object>> select(Integer id);
 
 
 

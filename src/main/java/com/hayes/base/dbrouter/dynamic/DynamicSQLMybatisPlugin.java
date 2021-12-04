@@ -1,6 +1,6 @@
 package com.hayes.base.dbrouter.dynamic;
 
-import com.hayes.base.dbrouter.annotation.DBRouterSplitTable;
+import com.hayes.base.dbrouter.annotation.DBRouter;
 import com.hayes.base.dbrouter.config.DBContextHolder;
 import lombok.extern.log4j.Log4j2;
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -43,9 +43,11 @@ public class DynamicSQLMybatisPlugin implements Interceptor {
         // 获取自定义注解判断是否进行分表操作
         String id = mappedStatement.getId();
         String className = id.substring(0, id.lastIndexOf("."));
+        String method = id.substring(id.lastIndexOf(".") + 1);
         Class<?> clazz = Class.forName(className);
-        DBRouterSplitTable dbRouterSplitTable = clazz.getAnnotation(DBRouterSplitTable.class);
-        if (null == dbRouterSplitTable || !dbRouterSplitTable.splitTable()) {
+        //todo 获取方法注解
+        DBRouter tableRouter = clazz.getAnnotation(DBRouter.class);
+        if (null == tableRouter || !tableRouter.splitTable()) {
             return invocation.proceed();
         }
 
@@ -61,7 +63,7 @@ public class DynamicSQLMybatisPlugin implements Interceptor {
         }
         assert null != tableName;
         String replaceSql = matcher.replaceAll(tableName + "_" + DBContextHolder.getTableRouter());
-        log.debug("更改后sql语句：{}", replaceSql);
+        log.info("更改后sql语句：{}", replaceSql);
         // 通过反射修改SQL语句
         Field field = boundSql.getClass().getDeclaredField("sql");
         field.setAccessible(true);

@@ -4,6 +4,7 @@ import com.hayes.base.dbrouter.config.DBContextHolder;
 import com.hayes.base.dbrouter.entity.RouterEntity;
 import com.hayes.base.dbrouter.strategy.IDBRouterStrategy;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
 /**
  * @program: hayes-db-router
@@ -13,6 +14,7 @@ import lombok.extern.log4j.Log4j2;
  * @create: 2021-12-04 14:07
  **/
 @Log4j2
+@Component
 public class DBRouterStrategyHashCode implements IDBRouterStrategy {
 
     private RouterEntity routerEntity;
@@ -24,10 +26,11 @@ public class DBRouterStrategyHashCode implements IDBRouterStrategy {
     /**
      * 路由计算
      * 傅哥发明
-     * @param routerKey 路由字段
+     *
+     * @param routerValue 路由字段值
      */
     @Override
-    public void doRouter(String routerKey) {
+    public void doRouter(String routerValue) {
 
         int dbCount = routerEntity.getDbNames().split(",").length;
 
@@ -36,7 +39,7 @@ public class DBRouterStrategyHashCode implements IDBRouterStrategy {
         int size = dbCount * tbCount;
 
         // 扰动函数
-        int idx = (size - 1) & (routerKey.hashCode() ^ (routerKey.hashCode() >>> 16));
+        int idx = (size - 1) & (routerValue.hashCode() ^ (routerValue.hashCode() >>> 16));
 
         // 库表索引
         int dbIdx = idx / tbCount + 1;
@@ -44,8 +47,8 @@ public class DBRouterStrategyHashCode implements IDBRouterStrategy {
 
         // 设置到 ThreadLocal
         DBContextHolder.setDatasourceRouter(String.format("db%02d", dbIdx));
-        DBContextHolder.setTableRouter(String.format("db%03d", tbIdx));
-        log.debug("数据库路由 dbIdx：{} tbIdx：{}",  dbIdx, tbIdx);
+        DBContextHolder.setTableRouter(String.format("%03d", tbIdx));
+        log.info("数据库路由 dbIdx：{} tbIdx：{}", dbIdx, tbIdx);
 
     }
 }

@@ -1,5 +1,6 @@
 package com.hayes.base.dbrouter;
 
+import lombok.extern.log4j.Log4j2;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,10 +12,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author: Mr.HayesLin
  * @create: 2021-12-02 12:09
  **/
+@Log4j2
 @SpringBootApplication
 @MapperScan("com.hayes.base.**.mapper")
 public class DbRouterApplication {
+
     public static void main(String[] args) {
+
         SpringApplication.run(DbRouterApplication.class, args);
     }
 }

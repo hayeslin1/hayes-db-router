@@ -20,4 +20,17 @@ public @interface DBRouter {
      */
     String routerKey() default "";
 
+    /**
+     * 默认分库
+     * @return
+     */
+    boolean splitDatabase() default true;
+
+    /**
+     * 默认分表
+     * @return
+     */
+    boolean splitTable() default true;
+
+
 }

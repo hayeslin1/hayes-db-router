@@ -7,8 +7,6 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
-
 /**
  * @program: hayes-db-router
  * @Class RouterEntity
@@ -25,17 +23,10 @@ import javax.sql.DataSource;
 public class RouterEntity {
 
     public static final String PREFIX = "spring.hayeslin.datasource";
-    public static final String DEFAULT = "dbDefault";
-
 
     private String dbNames;
     private String routerKey;
     private Integer tbCount;
-    private DataSource dbDefault;
-
-
-
-
 
 
 }

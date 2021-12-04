@@ -1,6 +1,7 @@
 package com.hayes.base.dbrouter.config;
 
 import com.hayes.base.dbrouter.dynamic.DynamicDataSource;
+import com.hayes.base.dbrouter.dynamic.DynamicSQLMybatisPlugin;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,7 @@ public class SqlSessionFactoryConfig {
 
         SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
         factoryBean.setDataSource(dynamicDataSource);
+        factoryBean.setPlugins(new DynamicSQLMybatisPlugin());
         return factoryBean.getObject();
 
     }

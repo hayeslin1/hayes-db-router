@@ -10,6 +10,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
@@ -21,6 +22,7 @@ import org.springframework.util.StringUtils;
  **/
 @Aspect
 @Log4j2
+@Component
 public class DBRouterJoinPoint {
 
     private RouterEntity routerEntity;
@@ -48,22 +50,22 @@ public class DBRouterJoinPoint {
         routerKey = StringUtils.isEmpty(routerKey) ? routerEntity.getRouterKey() : routerKey;
 
         // 路由属性
-        String routerKeyAttr = getAttrValue(routerKey, pjp.getArgs());
+        String routerKeyValue = getAttrValue(routerKey, pjp.getArgs());
         // 路由策略
-        dbRouterStrategy.doRouter(routerKeyAttr);
+        dbRouterStrategy.doRouter(routerKeyValue);
 
         try {
             return pjp.proceed();
         } finally {
-            DBContextHolder.removeDatasourceRouter();
             DBContextHolder.removeTableRouter();
+            DBContextHolder.removeDatasourceRouter();
         }
     }
 
     public String getAttrValue(String attr, Object[] args) {
         if (1 == args.length) {
             Object arg = args[0];
-            if (arg instanceof String) {
+            if (arg instanceof Integer) {
                 return arg.toString();
             }
         }
