@@ -1,68 +1,85 @@
-package com.hayes.base.dbrouter.config;
-
-import com.hayes.base.dbrouter.dynamic.DynamicDataSource;
-import com.hayes.base.dbrouter.enums.DBTypeEnum;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-
-import javax.sql.DataSource;
-import java.util.HashMap;
-
-/**
- * @program: hayes-db-router
- * @Class DataSourceConfiguration
- * @description: 关于此类的描述说明
- * @author: Mr.HayesLin
- * @create: 2021-12-02 14:22
- **/
-@Component
-@Configuration
-public class DataSourceConfiguration {
-
-
-    @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.master")
-    public DataSource masterDataSource() {
-        return DataSourceBuilder.create().build();
-    }
-
-
-    @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.slave1")
-    public DataSource slave1DataSource() {
-        return DataSourceBuilder.create().build();
-    }
-
-
-    @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.slave2")
-    public DataSource slave2DataSource() {
-        return DataSourceBuilder.create().build();
-    }
-
-
-    @Bean
-    public DataSource dataSource(
-            @Qualifier("masterDataSource") DataSource masterDataSource,
-            @Qualifier("slave1DataSource") DataSource slave1DataSource,
-            @Qualifier("slave2DataSource") DataSource slave2DataSource) {
-
-        HashMap<Object, Object> target = new HashMap<>();
-
-        target.put(DBTypeEnum.MASTER, masterDataSource);
-        target.put(DBTypeEnum.SLAVE1, slave1DataSource);
-        target.put(DBTypeEnum.SLAVE2, slave2DataSource);
-
-        DynamicDataSource dynamicDataSource = new DynamicDataSource();
-        dynamicDataSource.setDefaultTargetDataSource(masterDataSource);
-        dynamicDataSource.setTargetDataSources(target);
-
-        return dynamicDataSource;
-
-    }
-
-}
+//package com.hayes.base.dbrouter.config;
+//
+//import com.hayes.base.dbrouter.dynamic.DynamicDataSource;
+//import com.hayes.base.dbrouter.dynamic.DynamicSQLMybatisPlugin;
+//import com.hayes.base.dbrouter.entity.RouterEntity;
+//import com.hayes.base.dbrouter.util.DataSourceUtil;
+//import com.hayes.base.dbrouter.util.PropertyUtil;
+//import lombok.extern.log4j.Log4j2;
+//import org.apache.ibatis.plugin.Interceptor;
+//import org.springframework.context.EnvironmentAware;
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//import org.springframework.core.env.Environment;
+//import org.springframework.stereotype.Component;
+//
+//import javax.naming.NamingException;
+//import javax.sql.DataSource;
+//import java.util.HashMap;
+//import java.util.Map;
+//import java.util.Optional;
+//
+///**
+// * @program: hayes-db-router
+// * @Class DataSourceConfiguration
+// * @description: 关于此类的描述说明
+// * @author: Mr.HayesLin
+// * @create: 2021-12-02 14:22
+// **/
+//@Log4j2
+//@Component
+//@Configuration
+//public class DataSourceConfiguration implements EnvironmentAware {
+//
+//    private RouterEntity routerEntity;
+//
+//    public DataSourceConfiguration(RouterEntity routerEntity) {
+//        this.routerEntity = routerEntity;
+//    }
+//
+//    private final HashMap<Object, Object> target = new HashMap<>();
+//
+//    @Bean
+//    public DataSource dataSource() {
+//
+//
+//        DynamicDataSource dynamicDataSource = new DynamicDataSource();
+//        dynamicDataSource.setTargetDataSources(target);
+//        dynamicDataSource.setDefaultTargetDataSource(routerEntity.getDbDefault());
+//
+//        return dynamicDataSource;
+//
+//    }
+//
+//    @Bean
+//    public Interceptor plugin() {
+//        return new DynamicSQLMybatisPlugin();
+//    }
+//
+//    @Override
+//    public void setEnvironment(final Environment environment) {
+//
+//        String dbNames = Optional.ofNullable(routerEntity.getDbNames()).orElseThrow(NullPointerException::new);
+//        try {
+//            for (String dbName : dbNames.split(",")) {
+//                target.put(dbName, getDataSource(environment, dbName));
+//            }
+//            if (null == routerEntity.getDbDefault()) {
+//                routerEntity.setDbDefault(getDataSource(environment, RouterEntity.DEFAULT));
+//            }
+//
+//        } catch (final ReflectiveOperationException ex) {
+//            throw new RuntimeException("ReflectiveOperationException ! Can't find data source type.", ex);
+//        } catch (final NamingException ex) {
+//            throw new RuntimeException("NamingException ! Can't find JNDI data source.", ex);
+//        }
+//    }
+//
+//    public DataSource getDataSource(final Environment environment, String dbName) throws ReflectiveOperationException, NamingException {
+//        String dataSource = environment.getProperty(String.format("%s.%s", RouterEntity.PREFIX, dbName));
+//        assert dataSource != null;
+//        Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, dataSource, Map.class);
+//        DataSource result = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
+//        return result;
+//    }
+//}

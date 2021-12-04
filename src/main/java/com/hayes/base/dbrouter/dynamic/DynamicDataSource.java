@@ -1,7 +1,6 @@
 package com.hayes.base.dbrouter.dynamic;
 
 import com.hayes.base.dbrouter.config.DBContextHolder;
-import com.hayes.base.dbrouter.enums.DBTypeEnum;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
@@ -17,11 +16,11 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     @Override
     protected Object determineCurrentLookupKey() {
         try {
-            DBTypeEnum dbTypeEnum = DBContextHolder.get();
-            log.info("当前数据源：{}", dbTypeEnum.name());
-            return dbTypeEnum;
+            String dbRouter = DBContextHolder.getDatasourceRouter();
+            log.info("当前数据源：{}", dbRouter);
+            return dbRouter;
         } finally {
-            DBContextHolder.remove();
+            DBContextHolder.removeDatasourceRouter();
         }
     }
 }

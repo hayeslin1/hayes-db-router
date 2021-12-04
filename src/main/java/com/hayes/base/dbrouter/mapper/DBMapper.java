@@ -1,6 +1,5 @@
 package com.hayes.base.dbrouter.mapper;
 
-import com.hayes.base.dbrouter.annotation.Master;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -23,7 +22,6 @@ public interface DBMapper {
     int insert();
 
 
-    @Master
     @Select("select * from test")
     List<Map<String, Object>> selectWithMaster();
 

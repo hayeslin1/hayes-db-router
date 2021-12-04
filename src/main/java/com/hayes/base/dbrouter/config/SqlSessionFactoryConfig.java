@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * @create: 2021-12-02 19:51
  **/
 @Configuration
-public class MybatisConfig {
+public class SqlSessionFactoryConfig {
 
     @Bean
     public SqlSessionFactory sqlSessionFactory(DynamicDataSource dynamicDataSource) throws Exception {

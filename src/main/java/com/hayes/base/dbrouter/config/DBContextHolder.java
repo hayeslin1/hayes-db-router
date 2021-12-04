@@ -1,9 +1,6 @@
 package com.hayes.base.dbrouter.config;
 
-import com.hayes.base.dbrouter.enums.DBTypeEnum;
 import lombok.extern.log4j.Log4j2;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @program: hayes-db-router
@@ -15,41 +12,38 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Log4j2
 public class DBContextHolder {
 
+    /**
+     * 数据库路由
+     */
+    private static final ThreadLocal<String> datasourceRouter = new ThreadLocal<>();
+    /**
+     * 表路由
+     */
+    private static final ThreadLocal<String> tableRouter = new ThreadLocal<>();
 
-    private static final ThreadLocal<DBTypeEnum> contentHolder = new ThreadLocal<>();
-    private static final AtomicInteger counter = new AtomicInteger(0);
 
-
-    public static void set(DBTypeEnum dbType) {
-        contentHolder.set(dbType);
+    public static void setDatasourceRouter(String router) {
+        datasourceRouter.set(router);
     }
 
-    public static void remove() {
-        contentHolder.remove();
+    public static void setTableRouter(String router) {
+        tableRouter.set(router);
     }
 
-    public static DBTypeEnum get() {
-        return contentHolder.get();
+    public static String getDatasourceRouter() {
+        return datasourceRouter.get();
     }
 
-
-    public static void master() {
-        set(DBTypeEnum.MASTER);
-        log.info("db router to master !! ");
+    public static String getTableRouter() {
+        return tableRouter.get();
     }
 
-    public static void slave() {
-        if (counter.get() > 999) {
-            counter.set(0);
-        }
-        if (counter.getAndIncrement() % 2 == 0) {
-            set(DBTypeEnum.SLAVE1);
-            log.info("db router to slave1 !! ");
-        } else {
-            set(DBTypeEnum.SLAVE2);
-            log.info("db router to slave2 !! ");
-        }
+    public static void removeDatasourceRouter() {
+        datasourceRouter.remove();
     }
 
+    public static void removeTableRouter() {
+        tableRouter.remove();
+    }
 
 }
