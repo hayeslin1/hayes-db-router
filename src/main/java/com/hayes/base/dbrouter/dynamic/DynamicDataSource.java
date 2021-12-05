@@ -16,7 +16,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     @Override
     protected Object determineCurrentLookupKey() {
         String dbRouter = DBContextHolder.getDatasourceRouter();
-        log.info("当前数据源：{}", dbRouter);
-        return dbRouter;
+        log.debug("当前数据源：{}", dbRouter);
+        return String.format("db%s", dbRouter);
     }
 }

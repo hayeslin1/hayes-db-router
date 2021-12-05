@@ -18,19 +18,17 @@ import java.util.Map;
 @Mapper
 public interface DBMapper {
 
+    /**
+     * 路由之后的表名：test_000 , test_001：
+     */
 
-    @Insert("insert into test values (1,\"tom\")")
-    int insert();
-
-
-    @Select("select * from test")
-    List<Map<String, Object>> selectWithMaster();
-
-
-    @Select("select * from test1 where id = #{id} ")
+    @Insert("insert into test (id, u_id) values (#{id},#{uId})")
     @DBRouter(routerKey = "id")
-    List<Map<String, Object>> select(Integer id);
+    int insert(Long id, Long uId);
 
+    @Select("select * from test where id = #{id} ")
+    @DBRouter(routerKey = "id")
+    List<Map<String, Object>> select(Long id);
 
 
 }

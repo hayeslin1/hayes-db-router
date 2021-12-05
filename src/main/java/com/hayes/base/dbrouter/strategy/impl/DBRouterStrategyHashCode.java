@@ -25,14 +25,14 @@ public class DBRouterStrategyHashCode implements IDBRouterStrategy {
 
     /**
      * 路由计算
-     * 傅哥发明
+     * 搬运傅哥的算法
      *
      * @param routerValue 路由字段值
      */
     @Override
     public void doRouter(String routerValue) {
 
-        int dbCount = routerEntity.getDbNames().split(",").length;
+        int dbCount = routerEntity.getDbNames().split(",").length - 1;
 
         int tbCount = routerEntity.getTbCount();
 
@@ -46,9 +46,9 @@ public class DBRouterStrategyHashCode implements IDBRouterStrategy {
         int tbIdx = idx - tbCount * (dbIdx - 1);
 
         // 设置到 ThreadLocal
-        DBContextHolder.setDatasourceRouter(String.format("db%02d", dbIdx));
+        DBContextHolder.setDatasourceRouter(String.format("%02d", dbIdx));
         DBContextHolder.setTableRouter(String.format("%03d", tbIdx));
-        log.info("数据库路由 dbIdx：{} tbIdx：{}", dbIdx, tbIdx);
+        log.debug("数据库路由 dbIdx：{} tbIdx：{}", dbIdx, tbIdx);
 
     }
 }

@@ -48,40 +48,42 @@ public class DBRouterJoinPoint {
         }
 
         routerKey = StringUtils.isEmpty(routerKey) ? routerEntity.getRouterKey() : routerKey;
-
+        log.debug("执行策略：{}分库， {}分表, 路由字段：{}", dbRouter.splitDatabase() ? "" : "不", dbRouter.splitTable() ? "" : "不", routerKey);
         // 路由属性
         String routerKeyValue = getAttrValue(routerKey, pjp.getArgs());
         // 路由策略
         dbRouterStrategy.doRouter(routerKeyValue);
 
+        // 判断配置是否分库
+        if (!dbRouter.splitDatabase()) {
+            DBContextHolder.removeDatasourceRouter();
+        }
         try {
             return pjp.proceed();
         } finally {
             DBContextHolder.removeTableRouter();
-            DBContextHolder.removeDatasourceRouter();
         }
     }
 
     public String getAttrValue(String attr, Object[] args) {
-        if (1 == args.length) {
-            Object arg = args[0];
-            if (arg instanceof Integer) {
-                return arg.toString();
-            }
+        if (args.length == 0) {
+            return null;
         }
-
-        String filedValue = null;
         for (Object arg : args) {
             try {
-                if (!StringUtils.isEmpty(filedValue)) {
-                    break;
+                if (arg instanceof Integer
+                        || arg instanceof Long
+                        || arg instanceof String) {
+                    return arg.toString();
+                } else {
+                    return BeanUtils.getProperty(arg, attr);
                 }
-                filedValue = BeanUtils.getProperty(arg, attr);
             } catch (Exception e) {
                 log.error("获取路由属性值失败 attr：{}", attr, e);
+                throw new RuntimeException("获取路由属性值失败：" + attr, e);
             }
         }
-        return filedValue;
+        return null;
     }
 
 }

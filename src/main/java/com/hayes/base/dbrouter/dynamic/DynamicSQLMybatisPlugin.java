@@ -15,6 +15,7 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,12 +44,15 @@ public class DynamicSQLMybatisPlugin implements Interceptor {
         // 获取自定义注解判断是否进行分表操作
         String id = mappedStatement.getId();
         String className = id.substring(0, id.lastIndexOf("."));
-        String method = id.substring(id.lastIndexOf(".") + 1);
+        String methodName = id.substring(id.lastIndexOf(".") + 1);
         Class<?> clazz = Class.forName(className);
-        //todo 获取方法注解
-        DBRouter tableRouter = clazz.getAnnotation(DBRouter.class);
-        if (null == tableRouter || !tableRouter.splitTable()) {
-            return invocation.proceed();
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (method.getName().equals(methodName)) {
+                DBRouter annotation = method.getAnnotation(DBRouter.class);
+                if (null == annotation || !annotation.splitTable()) {
+                    return invocation.proceed();
+                }
+            }
         }
 
         // 获取SQL
@@ -63,7 +67,7 @@ public class DynamicSQLMybatisPlugin implements Interceptor {
         }
         assert null != tableName;
         String replaceSql = matcher.replaceAll(tableName + "_" + DBContextHolder.getTableRouter());
-        log.info("更改后sql语句：{}", replaceSql);
+        log.debug("更改后sql语句：{}", replaceSql);
         // 通过反射修改SQL语句
         Field field = boundSql.getClass().getDeclaredField("sql");
         field.setAccessible(true);
